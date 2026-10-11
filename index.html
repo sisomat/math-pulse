@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full select-none">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MathPulse - Edisi MI</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+          animation: {
+            'float': 'float 4s ease-in-out infinite',
+            'surge': 'surge 0.5s ease-out forwards',
+          },
+          keyframes: {
+            float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-6px)' } },
+            surge: {
+              '0%': { transform: 'scale(0.85)', opacity: '0' },
+              '60%': { transform: 'scale(1.08)', opacity: '1' },
+              '100%': { transform: 'scale(1)', opacity: '1' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --ink: #e8edf5;
+      --muted: #8a97ad;
+      --gold: #f5c76b;
+    }
+    body {
+      background:
+        radial-gradient(ellipse at 50% -10%, rgba(99, 102, 241, 0.28) 0%, transparent 55%),
+        radial-gradient(ellipse at 90% 100%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+        #0a0f1e;
+      color: var(--ink);
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+
+    /* ---------- Panel ---------- */
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025));
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: 0 20px 40px -12px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* ---------- Tombol 3D ---------- */
+    .btn3d {
+      --top: #64748b; --bot: #475569; --edge: #1e293b; --glow: rgba(100,116,139,0);
+      position: relative;
+      color: #fff;
+      border-radius: 16px;
+      background: linear-gradient(180deg, var(--top) 0%, var(--bot) 100%);
+      box-shadow:
+        0 6px 0 var(--edge),
+        0 14px 22px -4px rgba(0,0,0,0.5),
+        0 0 24px var(--glow),
+        inset 0 1.5px 0 rgba(255,255,255,0.38),
+        inset 0 -2px 0 rgba(0,0,0,0.12);
+      transition: transform .09s ease, box-shadow .09s ease, filter .15s ease;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn3d:hover { filter: brightness(1.08); }
+    .btn3d:active, .btn3d.pressed {
+      transform: translateY(5px);
+      box-shadow:
+        0 1px 0 var(--edge),
+        0 4px 8px -2px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+    }
+    .btn3d:disabled { opacity: .5; pointer-events: none; }
+    .btn3d.cyan    { --top:#22d3ee; --bot:#0891b2; --edge:#0c4a6e; --glow: rgba(34,211,238,.18); }
+    .btn3d.violet  { --top:#a78bfa; --bot:#6d28d9; --edge:#3b1a85; --glow: rgba(139,92,246,.18); }
+    .btn3d.rose    { --top:#fb7185; --bot:#e11d48; --edge:#7f1232; --glow: rgba(244,63,94,.18); }
+    .btn3d.emerald { --top:#34d399; --bot:#059669; --edge:#064e3b; --glow: rgba(52,211,153,.2); }
+    .btn3d.slate   { --top:#475569; --bot:#334155; --edge:#0f172a; }
+    .btn3d.gold    { --top:#fcd34d; --bot:#d97706; --edge:#78350f; }
+
+    /* Pilihan kelas */
+    .grade-btn {
+      --top:#2b3649; --bot:#1e2738; --edge:#0b111c;
+      border-radius: 14px;
+      color: var(--muted);
+    }
+    .grade-btn.is-active {
+      --top:#22d3ee; --bot:#0891b2; --edge:#0c4a6e; --glow: rgba(34,211,238,.25);
+      color: #fff;
+      transform: translateY(2px);
+      box-shadow:
+        0 3px 0 var(--edge),
+        0 8px 16px -4px rgba(0,0,0,0.5),
+        0 0 22px var(--glow),
+        inset 0 1.5px 0 rgba(255,255,255,0.4);
+    }
+
+    /* ---------- Node papan ---------- */
+    .node-btn {
+      --top:#3a475f; --bot:#222d42; --edge:#0b111c;
+      border-radius: 18px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      touch-action: none;
+    }
+    .node-number { color: #7dd3fc; text-shadow: 0 2px 6px rgba(56,189,248,.35); }
+    .node-operator {
+      --top:#5b45c9; --bot:#3a2a95; --edge:#1a1050;
+      color: #e9d5ff;
+      text-shadow: 0 2px 6px rgba(168,85,247,.45);
+    }
+    .node-btn.selected {
+      --top:#38bdf8; --bot:#0369a1; --edge:#082f49;
+      color: #fff;
+      transform: translateY(4px);
+      box-shadow:
+        0 2px 0 var(--edge),
+        0 0 26px rgba(56,189,248,.65),
+        inset 0 1.5px 0 rgba(255,255,255,0.4);
+    }
+    .node-btn.selected-op {
+      --top:#c084fc; --bot:#7e22ce; --edge:#3b0764;
+      color: #fff;
+      transform: translateY(4px);
+      box-shadow:
+        0 2px 0 var(--edge),
+        0 0 26px rgba(192,132,252,.65),
+        inset 0 1.5px 0 rgba(255,255,255,0.4);
+    }
+
+    canvas#connection-canvas {
+      pointer-events: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 10;
+    }
+
+    /* Target */
+    .target-chip {
+      background: linear-gradient(180deg, rgba(245,199,107,0.18), rgba(245,199,107,0.06));
+      border: 1.5px solid rgba(245,199,107,0.55);
+      color: var(--gold);
+      box-shadow: 0 0 28px rgba(245,199,107,0.18), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+
+    .title-grad {
+      background: linear-gradient(180deg, #ffffff 20%, #a5b4fc 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ---------- Cover ---------- */
+    #view-cover {
+      position: fixed; inset: 0; z-index: 60;
+      height: 100vh; height: 100dvh;
+      background: #0a0f1e;
+      overflow: hidden;
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    #view-cover.leaving { opacity: 0; transform: scale(1.06); pointer-events: none; }
+    .cover-bg {
+      position: absolute; inset: -30px;
+      background-size: cover; background-position: center;
+      filter: blur(28px) brightness(.6) saturate(1.2);
+    }
+    .cover-img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+    }
+    .cover-shade {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(10,15,30,0) 55%, rgba(10,15,30,.75) 100%);
+    }
+    .btn-main {
+      --top:#fde68a; --bot:#f59e0b; --edge:#92400e;
+      color: #5b2c02;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      letter-spacing: .12em;
+      padding: .7rem 3.2rem;
+      border-radius: 22px;
+      background: linear-gradient(180deg, var(--top) 0%, var(--bot) 100%);
+      box-shadow:
+        0 9px 0 var(--edge),
+        0 20px 30px -6px rgba(0,0,0,.6),
+        0 0 40px rgba(251,191,36,.45),
+        inset 0 2px 0 rgba(255,255,255,.6),
+        inset 0 -3px 0 rgba(0,0,0,.12);
+      transition: transform .09s ease, box-shadow .09s ease, filter .15s ease;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      animation: mainPulse 1.8s ease-in-out infinite;
+    }
+    .btn-main:hover { filter: brightness(1.08); }
+    .btn-main:active {
+      animation: none;
+      transform: translateY(8px);
+      box-shadow: 0 1px 0 var(--edge), 0 6px 12px -2px rgba(0,0,0,.6), inset 0 2px 0 rgba(255,255,255,.4);
+    }
+    @keyframes mainPulse {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-5px) scale(1.04); }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148,163,184,.3); border-radius: 4px; }
+  </style>
+</head>
+
+<body class="h-full flex flex-col font-sans antialiased min-h-screen">
+
+  <!-- COVER -->
+  <section id="view-cover">
+    <div class="cover-bg" style="background-image:url('https://i.ibb.co.com/XZ7TdN0v/Petualangan-Math-Pulse-di-Pulau-Awan-1.png')"></div>
+    <img class="cover-img" src="https://i.ibb.co.com/XZ7TdN0v/Petualangan-Math-Pulse-di-Pulau-Awan-1.png" alt="Petualangan MathPulse di Pulau Awan">
+    <div class="cover-shade"></div>
+    <div class="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 pb-[max(2.5rem,env(safe-area-inset-bottom))]">
+      <button id="btn-cover-play" class="btn-main">MAIN</button>
+    </div>
+  </section>
+
+  <!-- Header -->
+  <header class="w-full sticky top-0 z-40 px-4 py-3 flex items-center justify-between" style="background: linear-gradient(180deg, rgba(10,15,30,.85), rgba(10,15,30,0)); backdrop-filter: blur(6px);">
+    <div class="flex items-center gap-2.5">
+      <div class="btn3d cyan w-9 h-9 !rounded-xl flex items-center justify-center pointer-events-none" style="box-shadow:0 4px 0 var(--edge), inset 0 1.5px 0 rgba(255,255,255,.4);">
+        <i class="fa-solid fa-bolt text-sm"></i>
+      </div>
+      <span class="font-display font-bold text-base tracking-wide">MathPulse</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <button id="btn-sound" class="btn3d slate w-9 h-9 !rounded-xl flex items-center justify-center text-slate-200" style="box-shadow:0 4px 0 var(--edge), inset 0 1.5px 0 rgba(255,255,255,.25);">
+        <i class="fa-solid fa-volume-high text-sm"></i>
+      </button>
+      <button id="btn-help" class="btn3d slate w-9 h-9 !rounded-xl flex items-center justify-center text-slate-200" style="box-shadow:0 4px 0 var(--edge), inset 0 1.5px 0 rgba(255,255,255,.25);">
+        <i class="fa-solid fa-question text-sm"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center relative">
+
+    <!-- LOBI -->
+    <section id="view-menu" class="flex flex-col items-center justify-center text-center my-auto gap-8 py-4">
+
+      <div class="animate-float">
+        <h1 class="font-display title-grad font-black text-5xl md:text-7xl tracking-tight leading-none">MathPulse</h1>
+        <p class="text-slate-400 text-sm mt-3 tracking-wide">Sambung angka, capai target.</p>
+      </div>
+
+      <div class="w-full max-w-sm space-y-6">
+
+        <!-- Kelas -->
+        <div class="grid grid-cols-3 gap-3 pb-1" id="grade-selector">
+          <button data-grade="1" class="btn3d grade-btn is-active py-3 font-display font-bold text-sm">1 – 2</button>
+          <button data-grade="2" class="btn3d grade-btn py-3 font-display font-bold text-sm">3 – 4</button>
+          <button data-grade="3" class="btn3d grade-btn py-3 font-display font-bold text-sm">5 – 6</button>
+        </div>
+
+        <!-- Mode -->
+        <div class="space-y-4">
+          <button id="btn-mode-solo-ai" class="btn3d cyan w-full py-4 px-5 flex items-center gap-4 font-display font-bold text-lg">
+            <i class="fa-solid fa-robot w-6 text-center"></i>
+            <span class="flex-1 text-left">Lawan Robot</span>
+            <i class="fa-solid fa-play text-xs opacity-70"></i>
+          </button>
+
+          <button id="btn-mode-solo-time" class="btn3d violet w-full py-4 px-5 flex items-center gap-4 font-display font-bold text-lg">
+            <i class="fa-solid fa-stopwatch w-6 text-center"></i>
+            <span class="flex-1 text-left">Adu Waktu</span>
+            <i class="fa-solid fa-play text-xs opacity-70"></i>
+          </button>
+
+          <button id="btn-mode-duel" class="btn3d rose w-full py-4 px-5 flex items-center gap-4 font-display font-bold text-lg">
+            <i class="fa-solid fa-user-group w-6 text-center"></i>
+            <span class="flex-1 text-left">Duel 2 Pemain</span>
+            <i class="fa-solid fa-play text-xs opacity-70"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARENA -->
+    <section id="view-game" class="hidden flex-col items-center w-full max-w-2xl mx-auto gap-4">
+
+      <!-- HUD -->
+      <div class="w-full panel p-3.5 rounded-2xl flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center text-cyan-300" id="p1-avatar">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold" id="p1-label">Pemain 1</div>
+            <div class="text-xl font-display font-extrabold text-cyan-300 leading-none" id="p1-score">0</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-amber-300/80 font-bold mb-1">Target</div>
+          <div id="target-number" class="target-chip px-6 py-1.5 rounded-xl font-display font-black text-3xl">24</div>
+          <div class="w-24 bg-slate-700/50 rounded-full h-1.5 mt-2 overflow-hidden">
+            <div id="target-timer-bar" class="bg-amber-300 h-full w-full transition-all duration-100 ease-linear"></div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5 text-right">
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold" id="p2-label">AI Robot</div>
+            <div class="text-xl font-display font-extrabold text-pink-400 leading-none" id="p2-score">0</div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-pink-500/15 border border-pink-400/30 flex items-center justify-center text-pink-300" id="p2-avatar">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="w-full flex items-center justify-between text-xs px-1 text-slate-400">
+        <span id="game-status-msg" class="font-medium text-cyan-300/90 flex items-center gap-1.5">
+          <i class="fa-solid fa-hand-pointer"></i> Ketuk angka lalu operator
+        </span>
+        <span id="game-time-display" class="font-bold text-slate-100 panel px-3 py-1 rounded-lg">
+          <i class="fa-regular fa-clock text-amber-300 mr-1"></i> 60s
+        </span>
+      </div>
+
+      <!-- Persamaan -->
+      <div class="w-full panel p-3 rounded-xl flex items-center justify-between min-h-[54px]">
+        <div id="equation-display" class="font-display font-bold text-lg md:text-xl text-white tracking-wide truncate flex-1 text-center min-h-[28px]">
+          <span class="text-slate-500 italic text-sm">Pilih angka pertama…</span>
+        </div>
+        <div id="equation-result" class="text-sm font-extrabold px-3 py-1 rounded-lg bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 ml-2 shrink-0">= 0</div>
+      </div>
+
+      <!-- Papan -->
+      <div class="relative w-full aspect-square max-w-[420px] p-4 rounded-3xl panel flex items-center justify-center">
+        <canvas id="connection-canvas"></canvas>
+        <div id="grid-board" class="grid grid-cols-4 gap-3 md:gap-3.5 w-full h-full z-20" style="padding-bottom:6px;"></div>
+      </div>
+
+      <!-- Kontrol -->
+      <div class="w-full flex items-center justify-between gap-3 pt-2 pb-2">
+        <button id="btn-reset-path" class="btn3d slate flex-1 py-3 px-4 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 text-slate-100">
+          <i class="fa-solid fa-rotate-left"></i> Reset
+        </button>
+        <button id="btn-submit-surge" class="btn3d emerald flex-[1.4] py-3 px-4 font-display font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+          <i class="fa-solid fa-bolt text-yellow-200"></i> Kirim
+        </button>
+        <button id="btn-quit-game" class="btn3d rose w-12 h-12 flex items-center justify-center">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- MODAL BANTUAN -->
+  <div id="modal-help" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="panel w-full max-w-md rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2">
+        <h3 class="font-display font-bold text-xl text-white">Cara Bermain</h3>
+        <button id="btn-close-help" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="space-y-3 text-sm text-slate-300 leading-relaxed">
+        <div class="p-3.5 rounded-xl bg-white/5 border border-white/10">
+          <p class="font-bold text-amber-300 mb-1">1. Lihat target</p>
+          <p class="text-xs">Buat hitungan yang hasilnya sama dengan angka target di atas.</p>
+        </div>
+        <div class="p-3.5 rounded-xl bg-white/5 border border-white/10">
+          <p class="font-bold text-cyan-300 mb-1">2. Sambung node</p>
+          <p class="text-xs">Ketuk berselang-seling: <span class="font-mono text-cyan-300">angka</span> → <span class="font-mono text-purple-300">operator</span> → <span class="font-mono text-cyan-300">angka</span>. Dihitung dari kiri ke kanan, contoh <span class="font-mono text-amber-300">3 + 5 × 3 = 24</span>.</p>
+        </div>
+        <div class="p-3.5 rounded-xl bg-white/5 border border-white/10">
+          <p class="font-bold text-emerald-300 mb-1">3. Rantai panjang, skor tinggi</p>
+          <p class="text-xs">Semakin panjang rantai yang benar, semakin besar poinnya.</p>
+        </div>
+      </div>
+
+      <button id="btn-understand-help" class="btn3d cyan w-full py-3.5 font-display font-bold text-sm">Mengerti</button>
+    </div>
+  </div>
+
+  <!-- MODAL HASIL -->
+  <div id="modal-result" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+    <div class="panel w-full max-w-sm rounded-3xl p-6 text-center space-y-5 animate-surge">
+
+      <div class="btn3d gold w-16 h-16 !rounded-2xl flex items-center justify-center text-amber-950 text-3xl mx-auto pointer-events-none">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+
+      <div class="space-y-1">
+        <span id="result-badge" class="px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 text-xs font-bold uppercase tracking-wider">Luar Biasa!</span>
+        <h3 id="result-title" class="font-display font-black text-3xl text-white pt-3">Selesai!</h3>
+        <p id="result-subtitle" class="text-xs text-slate-400">Sirkuit matematika telah diselesaikan.</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 text-center">
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+          <div class="text-[10px] uppercase text-slate-400 font-bold" id="res-p1-name">Pemain 1</div>
+          <div class="text-3xl font-display font-extrabold text-cyan-300" id="res-p1-score">0</div>
+        </div>
+        <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+          <div class="text-[10px] uppercase text-slate-400 font-bold" id="res-p2-name">AI Robot</div>
+          <div class="text-3xl font-display font-extrabold text-pink-400" id="res-p2-score">0</div>
+        </div>
+      </div>
+
+      <div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-400/20 text-indigo-200 text-xs italic">
+        "<span id="praise-quote">Barangsiapa bersungguh-sungguh, ia akan berhasil (Man Jadda Wajada)!</span>"
+      </div>
+
+      <div class="flex items-center gap-3 pt-1 pb-1">
+        <button id="btn-play-again" class="btn3d cyan flex-1 py-3.5 font-display font-bold text-sm">
+          <i class="fa-solid fa-rotate-right mr-1"></i> Main Lagi
+        </button>
+        <button id="btn-return-menu" class="btn3d slate w-14 py-3.5 text-slate-100 font-bold text-sm">
+          <i class="fa-solid fa-house"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* AUDIO SYNTHESIZER */
+    class SoundEngine {
+      constructor() { this.ctx = null; this.enabled = true; }
+      init() {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AC();
+        }
+      }
+      playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.1) {
+        if (!this.enabled) return;
+        this.init();
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      }
+      playNodeSelect() { this.playTone(440, 'sine', 0.08, 0.12); }
+      playOpSelect() { this.playTone(587.33, 'triangle', 0.08, 0.12); }
+      playSurgeSuccess() {
+        if (!this.enabled) return;
+        this.init();
+        [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => setTimeout(() => this.playTone(f, 'sine', 0.2, 0.15), i * 80));
+      }
+      playError() { this.playTone(180, 'sawtooth', 0.25, 0.15); }
+      playTargetChange() { this.playTone(880, 'sine', 0.1, 0.08); }
+    }
+    const sound = new SoundEngine();
+  </script>
+
+  <script>
+    /* GAME STATE */
+    const GAME_CONFIG = {
+      1: { name: 'Kelas 1-2', minNum: 1, maxNum: 10, ops: ['+', '-'], targetMin: 2, targetMax: 20 },
+      2: { name: 'Kelas 3-4', minNum: 2, maxNum: 15, ops: ['+', '-', '×'], targetMin: 5, targetMax: 45 },
+      3: { name: 'Kelas 5-6', minNum: 2, maxNum: 25, ops: ['+', '-', '×', '÷'], targetMin: 8, targetMax: 75 }
+    };
+
+    let state = {
+      grade: 1,
+      mode: 'solo-ai',
+      activePlayer: 1,
+      scores: { 1: 0, 2: 0 },
+      targetNumber: 12,
+      targetTimer: null,
+      targetTimeRemaining: 10,
+      gameTimer: null,
+      gameTimeRemaining: 60,
+      board: [],
+      selectedPath: [],
+      aiInterval: null,
+      isPlaying: false
+    };
+
+    const viewMenu = document.getElementById('view-menu');
+    const viewGame = document.getElementById('view-game');
+    const modalHelp = document.getElementById('modal-help');
+    const modalResult = document.getElementById('modal-result');
+
+    const targetNumberEl = document.getElementById('target-number');
+    const targetTimerBar = document.getElementById('target-timer-bar');
+    const equationDisplay = document.getElementById('equation-display');
+    const equationResult = document.getElementById('equation-result');
+    const gridBoard = document.getElementById('grid-board');
+    const connectionCanvas = document.getElementById('connection-canvas');
+    const ctx = connectionCanvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = connectionCanvas.getBoundingClientRect();
+      connectionCanvas.width = rect.width;
+      connectionCanvas.height = rect.height;
+      drawConnectionLines();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function drawConnectionLines() {
+      ctx.clearRect(0, 0, connectionCanvas.width, connectionCanvas.height);
+      if (state.selectedPath.length < 2) return;
+
+      const canvasRect = connectionCanvas.getBoundingClientRect();
+      ctx.beginPath();
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = 'rgba(125, 211, 252, 0.9)';
+      ctx.shadowColor = '#22d3ee';
+      ctx.shadowBlur = 14;
+
+      state.selectedPath.forEach((nodeIdx, i) => {
+        const btn = gridBoard.children[nodeIdx];
+        if (!btn) return;
+        const r = btn.getBoundingClientRect();
+        const x = r.left - canvasRect.left + r.width / 2;
+        const y = r.top - canvasRect.top + r.height / 2;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+
+    document.querySelectorAll('.grade-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('is-active'));
+        const target = e.currentTarget;
+        target.classList.add('is-active');
+        state.grade = parseInt(target.getAttribute('data-grade'));
+        sound.playNodeSelect();
+      });
+    });
+
+    document.getElementById('btn-sound').addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      const icon = document.getElementById('btn-sound').querySelector('i');
+      icon.className = sound.enabled ? 'fa-solid fa-volume-high text-sm' : 'fa-solid fa-volume-xmark text-sm text-rose-400';
+    });
+
+    document.getElementById('btn-help').addEventListener('click', () => { modalHelp.classList.remove('hidden'); modalHelp.classList.add('flex'); });
+    const closeHelp = () => { modalHelp.classList.add('hidden'); modalHelp.classList.remove('flex'); };
+    document.getElementById('btn-close-help').addEventListener('click', closeHelp);
+    document.getElementById('btn-understand-help').addEventListener('click', closeHelp);
+
+    function startGame(mode) {
+      state.mode = mode;
+      state.scores = { 1: 0, 2: 0 };
+      state.activePlayer = 1;
+      state.isPlaying = true;
+      state.gameTimeRemaining = state.mode === 'solo-time' ? 45 : 60;
+
+      const p1Label = document.getElementById('p1-label');
+      const p2Label = document.getElementById('p2-label');
+      const p2Avatar = document.getElementById('p2-avatar');
+      const statusMsg = document.getElementById('game-status-msg');
+      statusMsg.innerHTML = '<i class="fa-solid fa-hand-pointer"></i> Ketuk angka lalu operator';
+
+      if (mode === 'duel') {
+        p1Label.textContent = 'Pemain 1';
+        p2Label.textContent = 'Pemain 2';
+        p2Avatar.innerHTML = '<i class="fa-solid fa-user-group"></i>';
+        statusMsg.textContent = 'Giliran Pemain 1!';
+      } else if (mode === 'solo-time') {
+        p1Label.textContent = 'Pemain';
+        p2Label.textContent = 'Target Skor';
+        p2Avatar.innerHTML = '<i class="fa-solid fa-bullseye"></i>';
+      } else {
+        p1Label.textContent = 'Pemain';
+        p2Label.textContent = 'AI Robot';
+        p2Avatar.innerHTML = '<i class="fa-solid fa-robot"></i>';
+      }
+
+      document.getElementById('game-time-display').innerHTML = `<i class="fa-regular fa-clock text-amber-300 mr-1"></i> ${state.gameTimeRemaining}s`;
+
+      updateHUD();
+      generateBoard();
+      generateNewTarget();
+
+      viewMenu.classList.add('hidden');
+      viewGame.classList.remove('hidden');
+      viewGame.classList.add('flex');
+
+      setTimeout(resizeCanvas, 100);
+
+      clearInterval(state.gameTimer);
+      state.gameTimer = setInterval(() => {
+        state.gameTimeRemaining--;
+        document.getElementById('game-time-display').innerHTML = `<i class="fa-regular fa-clock text-amber-300 mr-1"></i> ${state.gameTimeRemaining}s`;
+        if (state.gameTimeRemaining <= 0) endGame();
+      }, 1000);
+
+      if (mode === 'solo-ai') startAILoop();
+    }
+
+    document.getElementById('btn-mode-solo-ai').addEventListener('click', () => startGame('solo-ai'));
+    document.getElementById('btn-mode-solo-time').addEventListener('click', () => startGame('solo-time'));
+    document.getElementById('btn-mode-duel').addEventListener('click', () => startGame('duel'));
+
+    function generateBoard() {
+      const cfg = GAME_CONFIG[state.grade];
+      state.board = [];
+      gridBoard.innerHTML = '';
+      state.selectedPath = [];
+
+      const isOpSlot = [
+        false, true,  false, true,
+        true,  false, true,  false,
+        false, true,  false, true,
+        true,  false, true,  false
+      ];
+
+      for (let i = 0; i < 16; i++) {
+        let node = {};
+        if (isOpSlot[i]) {
+          node.type = 'op';
+          node.val = cfg.ops[Math.floor(Math.random() * cfg.ops.length)];
+        } else {
+          node.type = 'num';
+          node.val = Math.floor(Math.random() * (cfg.maxNum - cfg.minNum + 1)) + cfg.minNum;
+        }
+        state.board.push(node);
+
+        const btn = document.createElement('button');
+        btn.className = `btn3d node-btn w-full h-full flex flex-col items-center justify-center text-xl md:text-3xl ${node.type === 'num' ? 'node-number' : 'node-operator'}`;
+        btn.innerHTML = node.val;
+        btn.dataset.index = i;
+        btn.addEventListener('click', () => handleNodeClick(i));
+        gridBoard.appendChild(btn);
+      }
+
+      updateEquationDisplay();
+    }
+
+    function generateNewTarget() {
+      const cfg = GAME_CONFIG[state.grade];
+      state.targetNumber = Math.floor(Math.random() * (cfg.targetMax - cfg.targetMin + 1)) + cfg.targetMin;
+      targetNumberEl.textContent = state.targetNumber;
+      sound.playTargetChange();
+
+      state.targetTimeRemaining = 12;
+      clearInterval(state.targetTimer);
+      state.targetTimer = setInterval(() => {
+        state.targetTimeRemaining -= 0.1;
+        const pct = (state.targetTimeRemaining / 12) * 100;
+        targetTimerBar.style.width = `${Math.max(0, pct)}%`;
+        if (state.targetTimeRemaining <= 0) generateNewTarget();
+      }, 100);
+    }
+
+    function handleNodeClick(index) {
+      if (!state.isPlaying) return;
+
+      const path = state.selectedPath;
+      const lastIdx = path.length > 0 ? path[path.length - 1] : null;
+      const clickedNode = state.board[index];
+
+      if (lastIdx === index) {
+        path.pop();
+        sound.playNodeSelect();
+        updatePathUI();
+        return;
+      }
+
+      if (lastIdx !== null) {
+        if (path.includes(index)) return;
+
+        const r1 = Math.floor(lastIdx / 4), c1 = lastIdx % 4;
+        const r2 = Math.floor(index / 4), c2 = index % 4;
+        const isAdjacent = Math.abs(r1 - r2) <= 1 && Math.abs(c1 - c2) <= 1;
+
+        if (!isAdjacent) { sound.playError(); return; }
+
+        const lastNode = state.board[lastIdx];
+        if (lastNode.type === clickedNode.type) { sound.playError(); return; }
+      } else {
+        if (clickedNode.type !== 'num') { sound.playError(); return; }
+      }
+
+      path.push(index);
+      if (clickedNode.type === 'num') sound.playNodeSelect();
+      else sound.playOpSelect();
+
+      updatePathUI();
+    }
+
+    function updatePathUI() {
+      Array.from(gridBoard.children).forEach(btn => btn.classList.remove('selected', 'selected-op'));
+
+      state.selectedPath.forEach(idx => {
+        const btn = gridBoard.children[idx];
+        const node = state.board[idx];
+        btn.classList.add(node.type === 'num' ? 'selected' : 'selected-op');
+      });
+
+      drawConnectionLines();
+      updateEquationDisplay();
+    }
+
+    function calculatePathResult() {
+      if (state.selectedPath.length === 0) return { expr: '', result: 0, isValid: false };
+
+      let expr = '';
+      let currentVal = null;
+      let pendingOp = null;
+
+      state.selectedPath.forEach(idx => {
+        const node = state.board[idx];
+        expr += node.val + ' ';
+
+        if (node.type === 'num') {
+          if (currentVal === null) {
+            currentVal = node.val;
+          } else if (pendingOp) {
+            if (pendingOp === '+') currentVal += node.val;
+            else if (pendingOp === '-') currentVal -= node.val;
+            else if (pendingOp === '×') currentVal *= node.val;
+            else if (pendingOp === '÷') {
+              if (node.val !== 0) currentVal = Math.floor(currentVal / node.val);
+            }
+            pendingOp = null;
+          }
+        } else {
+          pendingOp = node.val;
+        }
+      });
+
+      const lastNode = state.board[state.selectedPath[state.selectedPath.length - 1]];
+      const isValid = lastNode && lastNode.type === 'num' && state.selectedPath.length >= 3;
+
+      return { expr, result: currentVal, isValid };
+    }
+
+    const RESULT_BASE = 'text-sm font-extrabold px-3 py-1 rounded-lg ml-2 shrink-0 ';
+    const RESULT_IDLE = RESULT_BASE + 'bg-indigo-500/20 border border-indigo-400/30 text-indigo-300';
+    const RESULT_HIT = RESULT_BASE + 'bg-emerald-500/25 border border-emerald-400 text-emerald-300 animate-bounce';
+
+    function updateEquationDisplay() {
+      const calc = calculatePathResult();
+      if (state.selectedPath.length === 0) {
+        equationDisplay.innerHTML = '<span class="text-slate-500 italic text-sm">Pilih angka pertama…</span>';
+        equationResult.textContent = '= 0';
+        equationResult.className = RESULT_IDLE;
+        return;
+      }
+
+      equationDisplay.textContent = calc.expr;
+      equationResult.textContent = `= ${calc.result}`;
+      equationResult.className = (calc.isValid && calc.result === state.targetNumber) ? RESULT_HIT : RESULT_IDLE;
+    }
+
+    document.getElementById('btn-reset-path').addEventListener('click', () => {
+      state.selectedPath = [];
+      updatePathUI();
+      sound.playNodeSelect();
+    });
+
+    document.getElementById('btn-submit-surge').addEventListener('click', () => {
+      submitSurgePath(state.activePlayer);
+    });
+
+    function submitSurgePath(player) {
+      const calc = calculatePathResult();
+
+      if (!calc.isValid || calc.result !== state.targetNumber) {
+        sound.playError();
+        equationDisplay.classList.add('animate-bounce');
+        setTimeout(() => equationDisplay.classList.remove('animate-bounce'), 400);
+        return;
+      }
+
+      sound.playSurgeSuccess();
+
+      const chainLen = state.selectedPath.length;
+      const points = 100 + (chainLen - 3) * 50;
+      state.scores[player] += points;
+      updateHUD();
+
+      state.selectedPath.forEach(idx => gridBoard.children[idx].classList.add('animate-surge'));
+
+      const cfg = GAME_CONFIG[state.grade];
+      setTimeout(() => {
+        state.selectedPath.forEach(idx => {
+          const node = state.board[idx];
+          if (node.type === 'num') {
+            node.val = Math.floor(Math.random() * (cfg.maxNum - cfg.minNum + 1)) + cfg.minNum;
+          } else {
+            node.val = cfg.ops[Math.floor(Math.random() * cfg.ops.length)];
+          }
+          const btn = gridBoard.children[idx];
+          btn.innerHTML = node.val;
+          btn.classList.remove('animate-surge');
+        });
+
+        state.selectedPath = [];
+        updatePathUI();
+        generateNewTarget();
+
+        if (state.mode === 'duel') {
+          state.activePlayer = state.activePlayer === 1 ? 2 : 1;
+          document.getElementById('game-status-msg').textContent = `Giliran Pemain ${state.activePlayer}!`;
+        }
+      }, 500);
+    }
+
+    function updateHUD() {
+      document.getElementById('p1-score').textContent = state.scores[1];
+      document.getElementById('p2-score').textContent = state.scores[2];
+    }
+
+    function startAILoop() {
+      clearInterval(state.aiInterval);
+      state.aiInterval = setInterval(() => {
+        if (!state.isPlaying || state.mode !== 'solo-ai') return;
+
+        if (Math.random() > 0.4) {
+          const aiPoints = 100 + Math.floor(Math.random() * 3) * 50;
+          state.scores[2] += aiPoints;
+          updateHUD();
+
+          const p2Avatar = document.getElementById('p2-avatar');
+          p2Avatar.classList.add('animate-surge');
+          setTimeout(() => p2Avatar.classList.remove('animate-surge'), 500);
+        }
+      }, 4500);
+    }
+
+    function endGame() {
+      state.isPlaying = false;
+      clearInterval(state.gameTimer);
+      clearInterval(state.targetTimer);
+      clearInterval(state.aiInterval);
+
+      const resP1Name = document.getElementById('res-p1-name');
+      const resP2Name = document.getElementById('res-p2-name');
+      const resultTitle = document.getElementById('result-title');
+      const resultBadge = document.getElementById('result-badge');
+      const praiseQuote = document.getElementById('praise-quote');
+
+      document.getElementById('res-p1-score').textContent = state.scores[1];
+      document.getElementById('res-p2-score').textContent = state.scores[2];
+
+      const quotes = [
+        "Barangsiapa bersungguh-sungguh, ia akan berhasil (Man Jadda Wajada)!",
+        "Ilmu adalah harta yang tak pernah habis. Teruslah belajar!",
+        "Masya Allah! Kecerdasanmu adalah nikmat dari Allah SWT.",
+        "Hebat! Matematika jadi menyenangkan jika sering dilatih."
+      ];
+      praiseQuote.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+
+      if (state.mode === 'duel') {
+        resP1Name.textContent = 'Pemain 1';
+        resP2Name.textContent = 'Pemain 2';
+        if (state.scores[1] > state.scores[2]) {
+          resultBadge.textContent = 'Pemain 1 Menang!';
+          resultTitle.textContent = 'Selamat Pemain 1!';
+        } else if (state.scores[2] > state.scores[1]) {
+          resultBadge.textContent = 'Pemain 2 Menang!';
+          resultTitle.textContent = 'Selamat Pemain 2!';
+        } else {
+          resultBadge.textContent = 'Hasil Seri!';
+          resultTitle.textContent = 'Seimbang!';
+        }
+      } else {
+        resP1Name.textContent = 'Skor Kamu';
+        resP2Name.textContent = state.mode === 'solo-time' ? 'Target' : 'AI Robot';
+        if (state.scores[1] >= state.scores[2]) {
+          resultBadge.textContent = 'Kemenangan Gemilang!';
+          resultTitle.textContent = 'Juara Matematika!';
+        } else {
+          resultBadge.textContent = 'Tetap Semangat!';
+          resultTitle.textContent = 'Hampir Berhasil!';
+        }
+      }
+
+      modalResult.classList.remove('hidden');
+      modalResult.classList.add('flex');
+    }
+
+    document.getElementById('btn-play-again').addEventListener('click', () => {
+      modalResult.classList.add('hidden');
+      modalResult.classList.remove('flex');
+      startGame(state.mode);
+    });
+
+    document.getElementById('btn-return-menu').addEventListener('click', () => {
+      modalResult.classList.add('hidden');
+      modalResult.classList.remove('flex');
+      viewGame.classList.add('hidden');
+      viewGame.classList.remove('flex');
+      viewMenu.classList.remove('hidden');
+    });
+
+    document.getElementById('btn-quit-game').addEventListener('click', () => endGame());
+
+    /* COVER */
+    document.getElementById('btn-cover-play').addEventListener('click', () => {
+      const cover = document.getElementById('view-cover');
+      sound.init();
+      sound.playSurgeSuccess();
+      cover.classList.add('leaving');
+      setTimeout(() => cover.remove(), 650);
+    });
+  </script>
+</body>
+</html>
